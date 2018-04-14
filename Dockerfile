@@ -3,10 +3,11 @@ FROM node:9.11
 WORKDIR /app
 
 COPY package.json .
-RUN npm install --quiet
+
+RUN npm install --dev
 
 COPY . .
 
-RUN npm install
+RUN npm run build
 
-CMD [ "node" ]
+RUN npm install

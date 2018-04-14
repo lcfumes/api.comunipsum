@@ -1,17 +1,28 @@
 version: '2'
 services:
+  web-comunipsum:
+    container_name: 'web-comunipsum'
+    image: nginx:latest
+    ports:
+      - 80:80
+    volumes:
+      - ./scripts/nginx/site.conf:/etc/nginx/conf.d/default.conf
+    environment:
+      - VIRTUAL_HOST=$APP_COMUNIPSUM_VIRTUAL_HOST
+    links:
+      - api-comunipsum:api-comunipsum
+
   api-comunipsum:
     container_name: 'api-comunipsum'
     build: "./"
     ports:
       - 8000:8000
-    command: npm start
+    command: $APP_COMUNIPSUM_START
     volumes:
       - ./:/app
       - ./node_modules:/app/node_modules
-    environment:
-        - VIRTUAL_HOST=api.comunipsum.local
     tty: true
+    env_file: .env
     depends_on:
       - db-comunipsum
     links:
@@ -25,4 +36,4 @@ services:
     volumes:
       - ./data/db:/data/db
     environment:
-      - VIRTUAL_HOST:db.comunipsum.local
+      - VIRTUAL_HOST:$DB_COMUNIPSUM_VIRTUAL_HOST

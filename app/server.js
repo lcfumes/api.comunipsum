@@ -8,10 +8,10 @@ import ConfigService from './services/ConfigService';
 import Routes from './routes/routes';
 
 const server = new Hapi.Server({
-  port: 8000
+  port: process.env.APP_COMUNIPSUM_PORT
 });
 
-mongoose.connect("mongodb://db.comunipsum.local/phrases");
+mongoose.connect(`mongodb://${process.env.DB_COMUNIPSUM_HOST}/${process.env.DB_COMUNIPSUM_DATABASE}`);
 
 (async () => {  
   const swaggerOptions = {
