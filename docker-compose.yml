@@ -1,0 +1,28 @@
+version: '2'
+services:
+  api-comunipsum:
+    container_name: 'api-comunipsum'
+    build: "./"
+    ports:
+      - 8000:8000
+    command: npm start
+    volumes:
+      - ./:/app
+      - ./node_modules:/app/node_modules
+    environment:
+        - VIRTUAL_HOST=api.comunipsum.local
+    tty: true
+    depends_on:
+      - db-comunipsum
+    links:
+      - db-comunipsum:db.comunipsum.local
+
+  db-comunipsum:
+    image: mongo:latest
+    container_name: 'db-comunipsum'
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data/db:/data/db
+    environment:
+      - VIRTUAL_HOST:db.comunipsum.local
