@@ -5,7 +5,7 @@ import PhrasesEntity from '../entities/PhrasesEntity';
 
 export default class PhrasesController {
 
-  getPhrases(request, h) {
+  handleGetPhrases(request, h) {
     const limit = request.params.limit || 1;
     const objPhrasesModel = new PhrasesModel();
     const promise = new Promise((resolve, reject) => {
@@ -19,7 +19,7 @@ export default class PhrasesController {
     return promise;
   }
 
-  getRandPhrases(request, h) {
+  handleGetRandPhrases(request, h) {
     const limit = request.params.limit || 1;
     const objPhrasesModel = new PhrasesModel();
     const promise = new Promise((resolve, reject) => {
@@ -33,7 +33,7 @@ export default class PhrasesController {
     return promise;
   }
 
-  createPhrase(request, h) {
+  handleCreatePhrase(request, h) {
     const objPhrasesModel = new PhrasesModel();
     const promise = new Promise((resolve, reject) => {
       objPhrasesModel.createPhrase(request.payload, (err, result, created) => {
@@ -51,7 +51,7 @@ export default class PhrasesController {
     return promise;
   }
 
-  deletePhrase(request, h) {
+  handleDeletePhrase(request, h) {
     const objPhrasesModel = new PhrasesModel();
     const promise = new Promise((resolve, reject) => {
       objPhrasesModel.deletePhrase(request.payload, (err, deleted) => {
@@ -74,7 +74,7 @@ export default class PhrasesController {
       {
         method: ['GET'],
         path: '/phrases/{limit?}',
-        handler: this.getPhrases,
+        handler: this.handleGetPhrases,
         config: {
           auth: false,
           description: 'Returns the number of requested phrases',
@@ -90,7 +90,7 @@ export default class PhrasesController {
       {
         method: ['GET'],
         path: '/phrases/rand/{limit?}',
-        handler: this.getRandPhrases,
+        handler: this.handleGetRandPhrases,
         config: {
           auth: false,
           description: 'Returns randomical the number of requested phrases',
@@ -106,7 +106,7 @@ export default class PhrasesController {
       {
         method: ['POST'],
         path: '/phrases/',
-        handler: this.createPhrase,
+        handler: this.handleCreatePhrase,
         config: {
           auth: "token",
           description: 'Insert a new phrase',
@@ -126,7 +126,7 @@ export default class PhrasesController {
       {
         method: ['DELETE'],
         path: '/phrases/',
-        handler: this.deletePhrase,
+        handler: this.handleDeletePhrase,
         config: {
           auth: "token",
           description: 'Delete a expecific phrase',

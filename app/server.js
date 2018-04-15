@@ -12,8 +12,9 @@ const server = new Hapi.Server({
   port: process.env.APP_COMUNIPSUM_PORT
 });
 
-server.auth.scheme('custom', AuthService);
+server.auth.scheme('custom', AuthService.verify);
 server.auth.strategy('token', 'custom');
+server.app.secretAppToken=process.env.APP_COMUNIPSUM_SECRET_KEY;
  
 (async () => {  
   const swaggerOptions = {
