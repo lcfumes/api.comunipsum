@@ -11,7 +11,7 @@ const AuthService = (server, options) => {
         throw Boom.unauthorized(null);
       }
       if (decoded.type !== 'ADMIN') {
-        throw Boom.unauthorized(null)
+        throw Boom.unauthorized(null);
       }
       return h.authenticated({ credentials: { token: token } });
     }

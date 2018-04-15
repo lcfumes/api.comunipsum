@@ -1,4 +1,5 @@
 import Joi from 'joi';
+import Boom from 'boom';
 import PhrasesModel from '../models/PhrasesModel';
 import PhrasesEntity from '../entities/PhrasesEntity';
 
@@ -32,10 +33,40 @@ export default class PhrasesController {
     return promise;
   }
 
-  async insertPhrase(request, h) {
-    console.log(request);
+  createPhrase(request, h) {
+    const objPhrasesModel = new PhrasesModel();
+    const promise = new Promise((resolve, reject) => {
+      objPhrasesModel.createPhrase(request.payload, (err, result, created) => {
+        if (err) {
+          throw Boom.serverUnavailable('unavailable');
+        }
+        const entity = new PhrasesEntity();
+        entity.set(result);
+        if (!created) {
+          resolve(Boom.conflict('Already exists.'));
+        }
+        resolve(entity.get());
+      });
+    });
+    return promise;
+  }
 
-    return {false: true};
+  deletePhrase(request, h) {
+    const objPhrasesModel = new PhrasesModel();
+    const promise = new Promise((resolve, reject) => {
+      objPhrasesModel.deletePhrase(request.payload, (err, deleted) => {
+        if (err) {
+          throw Boom.serverUnavailable('unavailable');
+        }
+        if (!deleted) {
+          const response = h.response({});
+          response.code(204);
+          resolve(response);
+        }
+        resolve({});
+      });
+    });
+    return promise;
   }
 
   routes() {
@@ -75,7 +106,7 @@ export default class PhrasesController {
       {
         method: ['POST'],
         path: '/phrases/',
-        handler: this.insertPhrase,
+        handler: this.createPhrase,
         config: {
           auth: "token",
           description: 'Insert a new phrase',
@@ -84,6 +115,26 @@ export default class PhrasesController {
           validate: {
             payload: {
               phrase: Joi.string().required().description('New phrase'),
+            },
+            headers: Joi.object().keys({
+              'content-type': Joi.string().required().valid(['application/json']).default('application/json'),
+              'x-access-token': Joi.string().required().description('Auth Token')
+            }).unknown()
+          }
+        }
+      },
+      {
+        method: ['DELETE'],
+        path: '/phrases/',
+        handler: this.deletePhrase,
+        config: {
+          auth: "token",
+          description: 'Delete a expecific phrase',
+          notes: 'must be logged',
+          tags: ['api', 'phrases', 'delete'],
+          validate: {
+            payload: {
+              phrase: Joi.string().required().description('Phrase to delete'),
             },
             headers: Joi.object().keys({
               'content-type': Joi.string().required().valid(['application/json']).default('application/json'),

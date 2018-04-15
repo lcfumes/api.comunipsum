@@ -10,6 +10,7 @@ export default class PhrasesEntity {
   }
 
   set(results) {
+    console.log(results);
     if (_.size(results) === 0) {
       return false;
     }
