@@ -2,10 +2,12 @@ import _ from 'lodash';
 
 import ApiController from '../controllers/ApiController';
 import PhrasesController from '../controllers/PhrasesController';
+import UsersController from '../controllers/UsersController';
 
 const importControllers = [
   ApiController,
-  PhrasesController
+  PhrasesController,
+  UsersController
 ];
 
 const routes = [];
