@@ -14,42 +14,57 @@ const model = mongoose.model('users', UsersSchema);
 export default class UsersModel {
 
   async totalDocs(callback) {
-    model.count({}, (err, count) => {
-      callback(err, count)
-    });
+    try {
+      const count = await model.count();
+      return count;
+    } catch (err) {
+      throw err;
+    }
   }
 
-  async findUser(userData, callback) {
-    const user = await model.findOne(userData, (err, user) => {
-      callback(err, user);
-    });
+  async findUser(userData) {
+    try {
+      const user = await model.findOne(userData);
+      return user;
+    } catch (err) {
+      throw err;
+    }
   }
 
   async createUser(user, callback) {
-    model.findOne({email: user.email}, (err, response) => {
-      if (err) {
-        return callback(err);
+    try {
+      const findUser = await model.findOne({email: user.email});
+      if (findUser !== null) {
+        return {
+          "exists": true,
+          "result": findUser
+        };
       }
-      if (response !== null) {
-        return callback(err, {}, false);
-      }
+    } catch (err) {
+      throw err;
+    }
 
-      const userData = {
-        name: user.name,
-        lastname: user.latname,
-        email: user.email,
-        password: user.password,
-        type: user.type
-      }
+    const userData = {
+      name: user.name,
+      lastname: user.latname,
+      email: user.email,
+      password: user.password,
+      type: user.type
+    }
+    
+    const create = new model(userData);
 
-      let create = new model(userData);
+    try {
+      const createUser = await create.save();
 
-      create.save((err, data) => {
-        if (!err) {
-          return callback(err, data, true)
-        }
-      });
-    })
+      return {
+        "exists": false,
+        "result": createUser
+      };
+
+    } catch (err) {
+      throw err;
+    }
   }
 
 }

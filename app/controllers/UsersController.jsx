@@ -8,49 +8,44 @@ import AuthService from '../services/AuthService';
 
 export default class UsersController {
 
-  handleCreateUser(request, h) {
+  async handleCreateUser(request, h) {
     let user = request.payload;
     user.password = crypto.createHash('md5').update(request.payload.password).digest("hex");
     const objUsersModel = new UsersModel();
-    const promise = new Promise((resolve, reject) => {
-      objUsersModel.createUser(user, (err, user, created) => {
-        if (err) {
-          throw Boom.serverUnavailable('unavailable');
-        }
-        if (!created) {
-          return resolve(Boom.conflict('Already exists.'));
-        }
-        const objUsersEntity = new UsersEntity();
-        objUsersEntity.setUser(user);
-        objUsersEntity.setToken(AuthService.getToken(user));
+    try {
+      const userCreate = await objUsersModel.createUser(user);
+      if (userCreate.exists) {
+        return Boom.conflict('Already exists.');
+      }
 
-        resolve(objUsersEntity.get());
-      });
-    });
-    return promise;
+      const objUsersEntity = new UsersEntity();
+      objUsersEntity.setUser(userCreate.result);
+      objUsersEntity.setToken(AuthService.getToken(userCreate.result));
+
+      return objUsersEntity.get();
+    } catch (err) {
+      throw Boom.serverUnavailable(err);
+    }
   }
 
-  handleLoginUser(request, h) {
+  async handleLoginUser(request, h) {
     let login = request.payload;
     login.password = crypto.createHash('md5').update(login.password).digest("hex");
 
     const objUserModel = new UsersModel();
-    const promisse = new Promise((resolve, reject) => {
-      objUserModel.findUser(login, (err, user) => {
-        if (err) {
-          throw Boom.serverUnavailable('unavailable');
-        }
-        if (user === null) {
-          return resolve(Boom.unauthorized());
-        }
-        const objUsersEntity = new UsersEntity();
-        objUsersEntity.setUser(user);
-        objUsersEntity.setToken(AuthService.getToken(user));
+    try {
+      const user = await objUserModel.findUser(login);
+      if (user === null) {
+        return Boom.unauthorized();
+      }
+      const objUsersEntity = new UsersEntity();
+      objUsersEntity.setUser(user);
+      objUsersEntity.setToken(AuthService.getToken(user));
 
-        resolve(objUsersEntity.get());
-      });
-    });
-    return promisse;
+      return objUsersEntity.get();
+    } catch (err) {
+      throw Boom.serverUnavailable(err);
+    }
   }
 
   routes() {
