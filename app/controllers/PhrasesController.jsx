@@ -5,68 +5,61 @@ import PhrasesEntity from '../entities/PhrasesEntity';
 
 export default class PhrasesController {
 
-  handleGetPhrases(request, h) {
+  async handleGetPhrases(request, h) {
     const limit = request.params.limit || 1;
     const objPhrasesModel = new PhrasesModel();
-    const promise = new Promise((resolve, reject) => {
-      objPhrasesModel.getPhrase(limit, (result) => {
-        const entity = new PhrasesEntity();
-        entity.set(result);
-        resolve(entity.get());
-      });
-    });
-
-    return promise;
+    
+    try {
+      const phrases = await objPhrasesModel.getPhrase(limit);
+      const entity = new PhrasesEntity();
+      entity.set(phrases);
+      return entity.get();
+    } catch(err) {
+      throw Boom.serverUnavailable(err);
+    }
   }
 
-  handleGetRandPhrases(request, h) {
+  async handleGetRandPhrases(request, h) {
     const limit = request.params.limit || 1;
     const objPhrasesModel = new PhrasesModel();
-    const promise = new Promise((resolve, reject) => {
-      objPhrasesModel.getRandPhrase(limit, (result) => {
-        const entity = new PhrasesEntity();
-        entity.set(result);
-        resolve(entity.get());
-      });
-    });
-
-    return promise;
+    try {
+      const phrases = await objPhrasesModel.getRandPhrase(limit);
+      const entity = new PhrasesEntity();
+      entity.set(phrases);
+      return entity.get();
+    } catch(err) {
+      throw Boom.serverUnavailable(err);
+    }
   }
 
-  handleCreatePhrase(request, h) {
+  async handleCreatePhrase(request, h) {
     const objPhrasesModel = new PhrasesModel();
-    const promise = new Promise((resolve, reject) => {
-      objPhrasesModel.createPhrase(request.payload, (err, result, created) => {
-        if (err) {
-          throw Boom.serverUnavailable('unavailable');
-        }
-        const entity = new PhrasesEntity();
-        entity.set(result);
-        if (!created) {
-          resolve(Boom.conflict('Already exists.'));
-        }
-        resolve(entity.get());
-      });
-    });
-    return promise;
+    try {
+      const phrase = await objPhrasesModel.createPhrase(request.payload);
+      const entity = new PhrasesEntity();
+      entity.set(phrase.result);
+      if (phrase.exists) {
+        return Boom.conflict('Already exists.');
+      }
+      return entity.get();
+    } catch(err) {
+      throw Boom.serverUnavailable(err);
+    }
   }
 
-  handleDeletePhrase(request, h) {
+  async handleDeletePhrase(request, h) {
     const objPhrasesModel = new PhrasesModel();
-    const promise = new Promise((resolve, reject) => {
-      objPhrasesModel.deletePhrase(request.payload, (err, deleted) => {
-        if (err) {
-          throw Boom.serverUnavailable('unavailable');
-        }
-        if (!deleted) {
-          const response = h.response({});
-          response.code(204);
-          resolve(response);
-        }
-        resolve({});
-      });
-    });
-    return promise;
+    try {
+      const remove = await objPhrasesModel.deletePhrase(request.payload);
+      if (!remove) {
+        const response = h.response({});
+        response.code(204);
+        return response; 
+      }
+      return {};
+    } catch(err) {
+      throw Boom.serverUnavailable(err);
+    }
   }
 
   routes() {
