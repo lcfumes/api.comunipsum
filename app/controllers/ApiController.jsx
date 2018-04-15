@@ -13,6 +13,7 @@ export default class ApiController {
         path: '/',
         handler: this.handlerWorking,
         config: {
+          auth: false,
           description: 'Its Working Route',
           notes: 'Its Working Route',
           tags: ['api', 'working', 'get'],
