@@ -1,10 +1,11 @@
 import Joi from 'joi';
+import Boom from 'boom';
 import PhrasesModel from '../models/PhrasesModel';
 import PhrasesEntity from '../entities/PhrasesEntity';
 
 export default class PhrasesController {
 
-  async getPhrases(request, h) {
+  getPhrases(request, h) {
     const limit = request.params.limit || 1;
     const objPhrasesModel = new PhrasesModel();
     const promise = new Promise((resolve, reject) => {
@@ -18,7 +19,7 @@ export default class PhrasesController {
     return promise;
   }
 
-  async getRandPhrases(request, h) {
+  getRandPhrases(request, h) {
     const limit = request.params.limit || 1;
     const objPhrasesModel = new PhrasesModel();
     const promise = new Promise((resolve, reject) => {
@@ -32,6 +33,42 @@ export default class PhrasesController {
     return promise;
   }
 
+  createPhrase(request, h) {
+    const objPhrasesModel = new PhrasesModel();
+    const promise = new Promise((resolve, reject) => {
+      objPhrasesModel.createPhrase(request.payload, (err, result, created) => {
+        if (err) {
+          throw Boom.serverUnavailable('unavailable');
+        }
+        const entity = new PhrasesEntity();
+        entity.set(result);
+        if (!created) {
+          resolve(Boom.conflict('Already exists.'));
+        }
+        resolve(entity.get());
+      });
+    });
+    return promise;
+  }
+
+  deletePhrase(request, h) {
+    const objPhrasesModel = new PhrasesModel();
+    const promise = new Promise((resolve, reject) => {
+      objPhrasesModel.deletePhrase(request.payload, (err, deleted) => {
+        if (err) {
+          throw Boom.serverUnavailable('unavailable');
+        }
+        if (!deleted) {
+          const response = h.response({});
+          response.code(204);
+          resolve(response);
+        }
+        resolve({});
+      });
+    });
+    return promise;
+  }
+
   routes() {
     return [
       {
@@ -39,6 +76,7 @@ export default class PhrasesController {
         path: '/phrases/{limit?}',
         handler: this.getPhrases,
         config: {
+          auth: false,
           description: 'Returns the number of requested phrases',
           notes: 'default is limit=1',
           tags: ['api', 'phrases', 'get'],
@@ -54,6 +92,7 @@ export default class PhrasesController {
         path: '/phrases/rand/{limit?}',
         handler: this.getRandPhrases,
         config: {
+          auth: false,
           description: 'Returns randomical the number of requested phrases',
           notes: 'default is limit=1',
           tags: ['api', 'phrases', 'get'],
@@ -61,6 +100,46 @@ export default class PhrasesController {
             params: {
               limit: Joi.number().allow('').optional()
             }
+          }
+        }
+      },
+      {
+        method: ['POST'],
+        path: '/phrases/',
+        handler: this.createPhrase,
+        config: {
+          auth: "token",
+          description: 'Insert a new phrase',
+          notes: 'must be logged',
+          tags: ['api', 'phrases', 'post'],
+          validate: {
+            payload: {
+              phrase: Joi.string().required().description('New phrase'),
+            },
+            headers: Joi.object().keys({
+              'content-type': Joi.string().required().valid(['application/json']).default('application/json'),
+              'x-access-token': Joi.string().required().description('Auth Token')
+            }).unknown()
+          }
+        }
+      },
+      {
+        method: ['DELETE'],
+        path: '/phrases/',
+        handler: this.deletePhrase,
+        config: {
+          auth: "token",
+          description: 'Delete a expecific phrase',
+          notes: 'must be logged',
+          tags: ['api', 'phrases', 'delete'],
+          validate: {
+            payload: {
+              phrase: Joi.string().required().description('Phrase to delete'),
+            },
+            headers: Joi.object().keys({
+              'content-type': Joi.string().required().valid(['application/json']).default('application/json'),
+              'x-access-token': Joi.string().required().description('Auth Token')
+            }).unknown()
           }
         }
       }

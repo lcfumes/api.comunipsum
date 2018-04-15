@@ -15,6 +15,7 @@ services:
   api-comunipsum:
     container_name: 'api-comunipsum'
     build: "./"
+    restart: always
     ports:
       - 8000:8000
     command: /bin/sh -c $APP_COMUNIPSUM_START

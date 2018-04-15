@@ -6,13 +6,15 @@ import mongoose from 'mongoose';
 import Pack from '../package';
 import ConfigService from './services/ConfigService';
 import Routes from './routes/routes';
+import AuthService from './services/AuthService';
 
 const server = new Hapi.Server({
   port: process.env.APP_COMUNIPSUM_PORT
 });
 
-mongoose.connect(`mongodb://${process.env.DB_COMUNIPSUM_HOST}/${process.env.DB_COMUNIPSUM_DATABASE}`);
-
+server.auth.scheme('custom', AuthService);
+server.auth.strategy('token', 'custom');
+ 
 (async () => {  
   const swaggerOptions = {
     info: {
@@ -28,22 +30,37 @@ mongoose.connect(`mongodb://${process.env.DB_COMUNIPSUM_HOST}/${process.env.DB_C
       {
         plugin: HapiSwagger,
         options: swaggerOptions
-      }
+      },
+      require('hapi-auth-jwt2')
     ]);
   } catch (err) {
     console.log(err);
   }
-  
+
   try {
-    await server.start();
-    console.log('Server running at:', server.info.uri);
-  } catch(err) {
+    server.auth.strategy('jwt', 'jwt',
+    { key: process.env.APP_COMUNIPSUM_SECRET_KEY,
+      validate: true,
+      verifyOptions: { algorithms: [ 'HS256' ] }
+    });
+  } catch (err) {
     console.log(err);
   }
-  
+
+  server.auth.default('jwt');
+
   try {
     await server.route(Routes);
   } catch(err) {
     console.log(err);
   }
+  
+  try {
+    await server.start();
+    mongoose.connect(`mongodb://${process.env.DB_COMUNIPSUM_HOST}/${process.env.DB_COMUNIPSUM_DATABASE}`);
+    console.log('Server running at:', server.info.uri);
+  } catch(err) {
+    console.log(err);
+  }
+  
 })();
