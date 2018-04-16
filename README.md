@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/lcfumes/api.comunipsum.svg?branch=master)](https://travis-ci.org/lcfumes/api.comunipsum)
+
 # API Comunipsum #
 
 ## Dev ##
