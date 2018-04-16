@@ -8,7 +8,7 @@
     "build": "babel app -d dist",
     "serve": "node dist/server.js",
     "test": "npm run eslint && npm run test-jest",
-    "test-jest": "jest --coverage",
+    "test-jest": "jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "eslint": "eslint ./"
   },
   "repository": {
@@ -38,6 +38,7 @@
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "coveralls": "^3.0.0",
     "eslint": "^4.19.1",
     "eslint-config-airbnb": "^16.1.0",
     "eslint-plugin-import": "^2.11.0",
