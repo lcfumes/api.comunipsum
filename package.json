@@ -8,7 +8,7 @@
     "build": "babel app -d dist",
     "serve": "node dist/server.js",
     "test": "npm run eslint && npm run test-jest",
-    "test-jest": "jest",
+    "test-jest": "jest --coverage",
     "eslint": "eslint ./"
   },
   "repository": {

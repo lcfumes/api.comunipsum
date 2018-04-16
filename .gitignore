@@ -3,3 +3,5 @@ data/
 .envdist/
 dist/
 .env
+coverage/
+package-lock.json
