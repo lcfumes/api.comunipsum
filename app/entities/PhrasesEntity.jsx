@@ -10,16 +10,10 @@ export default class PhrasesEntity {
   }
 
   set(results) {
-    if (_.size(results) === 0) {
-      return false;
-    }
-
     this.results = {
       total: _.size(results),
       _embedded: results,
     };
-
-    return this.results;
   }
 
   get() {
