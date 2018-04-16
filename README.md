@@ -20,18 +20,6 @@ URL
 http://localhost:8000
 ```
 
-## Endpoints ##
-
-Verify if the API is working
-```
-GET /
-```
-
-default limit is 1
-```
-GET /phrases/{limit*}
-```
-
 ## Swagger ##
 
 With the container up
