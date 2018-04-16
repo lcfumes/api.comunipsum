@@ -7,7 +7,9 @@
     "start": "NODE_ENV=development node-dev bootstrap.js",
     "build": "babel app -d dist",
     "serve": "node dist/server.js",
-    "test": "jest"
+    "test": "npm run eslint && npm run test-jest",
+    "test-jest": "jest",
+    "eslint": "eslint ./"
   },
   "repository": {
     "type": "git",
@@ -20,6 +22,7 @@
   },
   "homepage": "https://github.com/lcfumes/api.comunipsum#readme",
   "dependencies": {
+    "babel-core": "^6.26.0",
     "boom": "^7.2.0",
     "glob": "^7.1.2",
     "hapi": "^17.3.1",
@@ -34,8 +37,12 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.0",
     "babel-preset-env": "^1.6.1",
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.11.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-react": "^7.7.0",
     "jest": "^22.4.3",
     "node-dev": "^3.1.3",
     "swagger": "^0.7.5"

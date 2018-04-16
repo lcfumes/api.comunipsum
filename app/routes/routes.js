@@ -7,16 +7,16 @@ import UsersController from '../controllers/UsersController';
 const importControllers = [
   ApiController,
   PhrasesController,
-  UsersController
+  UsersController,
 ];
 
 const routes = [];
 
-_.map(importControllers, (controller) => {
-  const objController = new controller();
+_.map(importControllers, (Controller) => {
+  const objController = new Controller();
   _.map(objController.routes(), (route) => {
     routes.push(route);
   });
-})
+});
 
 module.exports = routes;
