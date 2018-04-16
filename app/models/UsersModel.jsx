@@ -46,7 +46,7 @@ export default class UsersModel {
 
     const userData = {
       name: user.name,
-      lastname: user.latname,
+      lastname: user.lastname,
       email: user.email,
       password: user.password,
       type: user.type
