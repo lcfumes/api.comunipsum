@@ -18,10 +18,9 @@ export default class AuthService {
 
   static verify(request, h) {
     return {
-      authenticate: function (request, h) {
+      authenticate: (request, h) => {
         const token = request.headers['x-access-token'];
-        var decoded = jwt.verify(token, process.env.APP_COMUNIPSUM_SECRET_KEY);
-
+        const decoded = jwt.verify(token, process.env.APP_COMUNIPSUM_SECRET_KEY);
         if (!token) {
           throw Boom.unauthorized(null);
         }
