@@ -7,6 +7,10 @@ import HapiAuthJwt2 from 'hapi-auth-jwt2';
 import Pack from '../package.json';
 import Routes from './routes/routes';
 import AuthService from './services/AuthService';
+import dotenv from 'dotenv'
+dotenv.config();
+
+console.log(process.env);
 
 const server = new Hapi.Server({
   port: process.env.APP_COMUNIPSUM_PORT,

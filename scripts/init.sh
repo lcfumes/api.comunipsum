@@ -4,11 +4,10 @@ cd ..
 BASEPATH=$(pwd)
 
 echo "Set env"
-set -a
-source .env
+cp ../private/.env .env
 
 echo "Building containers"
-docker-compose build
+docker build -t lcfumes/comunipsum.prod:latest .
 
 echo "Start containers"
-docker-compose up -d
+

@@ -5,3 +5,4 @@ dist/
 .env
 coverage/
 package-lock.json
+app/npm-debug.log
