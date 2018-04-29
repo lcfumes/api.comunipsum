@@ -10,8 +10,6 @@ import AuthService from './services/AuthService';
 import dotenv from 'dotenv'
 dotenv.config();
 
-console.log(process.env);
-
 const server = new Hapi.Server({
   port: process.env.APP_COMUNIPSUM_PORT,
 });
