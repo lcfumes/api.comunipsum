@@ -4,11 +4,10 @@ cd ..
 BASEPATH=$(pwd)
 
 echo "Set env"
-set -a
-source .env
+cp ../private/.env .env
 
 echo "Building containers"
-docker-compose build
+docker build -t lcfumes/comunipsum.prod:latest .
 
 echo "Start containers"
-docker-compose up -d
+docker run -it -d -p 8000:8000 lcfumes/comunipsum.prod:1.0 bash -c "npm run serve"
