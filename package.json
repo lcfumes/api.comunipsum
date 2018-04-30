@@ -4,7 +4,7 @@
   "description": "Comunipsum Open API",
   "main": "server.js",
   "scripts": {
-    "start": "NODE_ENV=development node-dev bootstrap.js",
+    "start": "node-dev bootstrap.js",
     "build": "babel app -d dist",
     "serve": "node dist/server.js",
     "test": "npm run eslint && npm run test-jest",
@@ -31,6 +31,7 @@
     "hapi-swagger": "^9.1.1",
     "inert": "^5.1.0",
     "joi": "^13.1.2",
+    "jsonwebtoken": "^8.2.1",
     "lodash": "^4.17.5",
     "mongoose": "^5.0.14",
     "request": "^2.85.0",
