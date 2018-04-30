@@ -3,11 +3,12 @@ import Inert from 'inert';
 import Vision from 'vision';
 import HapiSwagger from 'hapi-swagger';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import HapiAuthJwt2 from 'hapi-auth-jwt2';
 import Pack from '../package.json';
 import Routes from './routes/routes';
 import AuthService from './services/AuthService';
-import dotenv from 'dotenv'
+
 dotenv.config();
 
 const server = new Hapi.Server({
