@@ -11,8 +11,8 @@ export default class PhrasesEntity {
 
   set(results) {
     this.results = {
-      total: _.size(results),
-      _embedded: results,
+      total: results.Count,
+      _embedded: results.Items,
     };
   }
 

@@ -2,9 +2,9 @@ import Hapi from 'hapi';
 import Inert from 'inert';
 import Vision from 'vision';
 import HapiSwagger from 'hapi-swagger';
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import HapiAuthJwt2 from 'hapi-auth-jwt2';
+
 import Pack from '../package.json';
 import Routes from './routes/routes';
 import AuthService from './services/AuthService';
@@ -64,7 +64,6 @@ server.app.secretAppToken = process.env.APP_COMUNIPSUM_SECRET_KEY;
 
   try {
     await server.start();
-    mongoose.connect(`mongodb://${process.env.DB_COMUNIPSUM_HOST}/${process.env.DB_COMUNIPSUM_DATABASE}`);
 
     // eslint-disable-next-line no-console
     console.log('Server running at:', server.info.uri);

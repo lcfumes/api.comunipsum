@@ -1,39 +1,51 @@
-import mongoose from 'mongoose';
+import AWS from 'aws-sdk';
 
-const Schema = mongoose.Schema;
-const UsersSchema = new Schema({
-  name: String,
-  lastname: String,
-  email: String,
-  password: String,
-  type: String
+AWS.config.update({
+  region: process.env.AWS_REGION,
+  endpoint: process.env.AWS_DYNAMO_ENDPOINT
 });
 
-const model = mongoose.model('users', UsersSchema);
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+
+const table = 'users';
 
 export default class UsersModel {
 
   async totalDocs(callback) {
+    const params = {
+        TableName: table,
+        Select:'COUNT'
+    };
+     
     try {
-      const count = await model.count();
-      return count;
+      return await dynamodb.query(params).promise();
     } catch (err) {
       throw err;
     }
   }
 
   async findUser(userData) {
+    const params = {
+      TableName: table,
+      Key: userData
+    };
     try {
-      const user = await model.findOne(userData);
+      const user = await dynamodb.get(params).promise();
       return user;
     } catch (err) {
       throw err;
     }
   }
 
-  async createUser(user, callback) {
+  async createUser(user) {
+    let params = {
+      TableName: table,
+      Key: {
+        email: user.email
+      }
+    };
     try {
-      const findUser = await model.findOne({email: user.email});
+      const findUser = await dynamodb.get(params).promise();
       if (findUser !== null) {
         return {
           "exists": true,
@@ -44,22 +56,23 @@ export default class UsersModel {
       throw err;
     }
 
-    const userData = {
-      name: user.name,
-      lastname: user.lastname,
-      email: user.email,
-      password: user.password,
-      type: user.type
-    }
-    
-    const create = new model(userData);
+    params = {
+      TableName: table,
+      Item: {
+        name: user.name,
+        lastname: user.lastname,
+        email: user.email,
+        password: user.password,
+        type: user.type
+      }
+    };
 
     try {
-      const createUser = await create.save();
+      const create = await dynamodb.put(params).promise();
 
       return {
         "exists": false,
-        "result": createUser
+        "result": create
       };
 
     } catch (err) {

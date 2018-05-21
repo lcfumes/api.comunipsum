@@ -1,23 +1,30 @@
-import mongoose from 'mongoose';
+import AWS from 'aws-sdk';
 
-const Schema = mongoose.Schema;
-const PhrasesSchema = new Schema({
-  phrase: String
+AWS.config.update({
+  region: process.env.AWS_REGION,
+  endpoint: process.env.AWS_DYNAMO_ENDPOINT
 });
-const model = mongoose.model('phrases', PhrasesSchema);
+
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+
+const table = 'phrases';
 
 export default class PhrasesModel {
 
   async getPhrase(limit, callback) {
+    const params = {
+      TableName: table,
+      Limit: limit
+    };
+    let result = [];
     try {
-      const results = await model.find().limit(limit);
-      return results;
+      return dynamodb.scan(params).promise();
     } catch (err) {
       throw err;
     }
   }
 
-  async getRandPhrase(limit, callback) {
+  async getRandPhrase(limit) {
     try {
       const results = await model.aggregate().sample(limit);
       return results;
@@ -26,7 +33,7 @@ export default class PhrasesModel {
     }
   }
 
-  async createPhrase(payload, callback) {
+  async createPhrase(payload) {
     try {
       const phrase = await model.findOne({phrase: payload.phrase});
       if (phrase !== null) {
@@ -39,12 +46,16 @@ export default class PhrasesModel {
       throw err;
     }
 
-    const createPhrase = new model({
-      phrase: payload.phrase
-    });
+    const params = {
+      TableName: table,
+      Item:{
+        "phrase": payload.phrase,
+      }
+    };
 
     try {
-      const create = await createPhrase.save();
+      const create = await dynamodb.put(params).promise();
+
       return {
         "exists": false,
         "result": create
@@ -55,6 +66,17 @@ export default class PhrasesModel {
   }
 
   async deletePhrase(payload, callback) {
+    const params = {
+      TableName: table,
+      Key:{
+        "phrase": payload.phrase,
+      },
+      ConditionExpression:"info.rating <= :val",
+      ExpressionAttributeValues: {
+        ":val": 5.0
+      }
+    };
+
     try {
       const phrase = await model.findOne({phrase: payload.phrase});
       if (phrase === null) {
@@ -65,7 +87,7 @@ export default class PhrasesModel {
     }
 
     try {
-      const remove = await model.remove({phrase: payload.phrase});
+      const remove = await dynamodb.delete(params).promise();
       return true;
     } catch (err) {
       throw err;
