@@ -11,3 +11,4 @@ COPY . .
 RUN npm run build
 
 EXPOSE 8000
+EXPOSE 9229

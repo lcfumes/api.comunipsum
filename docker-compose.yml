@@ -6,7 +6,8 @@ services:
     restart: always
     ports:
       - 8000:8000
-    command: /bin/sh -c "npm start"
+      - 9229:9229
+    command: /bin/sh -c "npm run debug"
     volumes:
       - ./:/app
       - ./node_modules:/app/node_modules

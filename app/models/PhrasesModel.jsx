@@ -11,12 +11,11 @@ const table = 'phrases';
 
 export default class PhrasesModel {
 
-  async getPhrase(limit, callback) {
+  async getPhrase(limit) {
     const params = {
       TableName: table,
       Limit: limit
     };
-    let result = [];
     try {
       return dynamodb.scan(params).promise();
     } catch (err) {
@@ -25,9 +24,22 @@ export default class PhrasesModel {
   }
 
   async getRandPhrase(limit) {
+    const params = {
+      TableName: table
+    };
     try {
-      const results = await model.aggregate().sample(limit);
-      return results;
+      const all = await dynamodb.scan(params).promise();
+      const result = {
+        Items: [],
+        Count: 0
+      }
+      for (let i=0; i < limit; i++) {
+        const random = Math.floor(Math.random() * all.Count);
+        result.Items.push(all.Items[random]);
+        result.Count++;
+      }
+      return result;
+
     } catch (err) {
       throw err;
     }

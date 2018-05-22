@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node-dev bootstrap.js",
+    "debug": "node --inspect bootstrap.js",
     "build": "babel app -d dist",
     "serve": "node dist/server.js",
     "test": "npm run eslint && npm run test-jest",
